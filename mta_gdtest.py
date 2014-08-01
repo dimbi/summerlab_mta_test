@@ -4,7 +4,6 @@ import argparse
 import sys
 
 def KeyCheck(key,line): 
-  urlData = "http://api.prod.obanyc.com/api/siri/vehicle-monitoring.json?key="+key+"&VehicleMonitoringDetailLevel=calls&LineRef="+line
   try:
       webUrl = urllib2.urlopen(urlData)
   except urllib2.HTTPError, e:
@@ -14,22 +13,20 @@ def KeyCheck(key,line):
       sys.exit()
   
 def WebAccess(key,line):
-    urlData = "http://api.prod.obanyc.com/api/siri/vehicle-monitoring.json?key="+key+"&VehicleMonitoringDetailLevel=calls&LineRef="+line
- 
     # Open the URL and read the data
     webUrl = urllib2.urlopen(urlData)
+    #print (webUrl.getcode())
     if (webUrl.getcode() == 200):
       data = webUrl.read()
+      #print "Read data finished"
     else:
       sys.exit("Received an error from server, cannot retrieve results " + str(webUrl.getcode()))   
-
     return data
        
 def printResults(data,busline):
   bus_num=0;
   # Use the json module to load the string data into a dictionary
   theJSON = json.loads(data)  
-  
   # Problem's answers
   #-------------------------------------
   #Display bus line
@@ -48,6 +45,10 @@ def printResults(data,busline):
         print j["MonitoredVehicleJourney"]["VehicleLocation"]["Latitude"],j["MonitoredVehicleJourney"]["VehicleLocation"]["Longitude"]
         
 def main(bus_key,bus_line):
+
+  #url data
+  global urlData
+  urlData = "http://api.prod.obanyc.com/api/siri/vehicle-monitoring.json?key="+bus_key+"&VehicleMonitoringDetailLevel=calls&LineRef="+bus_line
   #cheking API keys
   KeyCheck(bus_key,bus_line)
   # define a variable to hold the source URL
