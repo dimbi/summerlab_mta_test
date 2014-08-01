@@ -2,6 +2,7 @@ import urllib2
 import json
 import argparse
 import sys
+import pyproj 
 
 def KeyCheck(key,line): 
   try:
@@ -27,6 +28,7 @@ def printResults(data,busline):
   bus_num=0;
   # Use the json module to load the string data into a dictionary
   theJSON = json.loads(data)  
+  
   # Problem's answers
   #-------------------------------------
   #Display bus line
@@ -38,14 +40,17 @@ def printResults(data,busline):
         bus_num+=1
   print "Number of Active Buses : "+str(bus_num)
 
+  #Preparation for conversion
+  proj=pyproj.Proj(init="esri:26918")
   #Display bus locations
-  print "Locations              :  Lat/Long"
+  print "Locations:\tLat/Long \t\t\t\t\t\t ESRI:26918"
   for i in theJSON["Siri"]["ServiceDelivery"]["VehicleMonitoringDelivery"]:
     for j in i["VehicleActivity"]:
-        print j["MonitoredVehicleJourney"]["VehicleLocation"]["Latitude"],j["MonitoredVehicleJourney"]["VehicleLocation"]["Longitude"]
+        lat=j["MonitoredVehicleJourney"]["VehicleLocation"]["Latitude"]
+        lon=j["MonitoredVehicleJourney"]["VehicleLocation"]["Longitude"]
+        print (lat,lon),"\t\t\t",proj(lon,lat)
         
 def main(bus_key,bus_line):
-
   #url data
   global urlData
   urlData = "http://api.prod.obanyc.com/api/siri/vehicle-monitoring.json?key="+bus_key+"&VehicleMonitoringDetailLevel=calls&LineRef="+bus_line
