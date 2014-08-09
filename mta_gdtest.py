@@ -70,8 +70,7 @@ def printResults(data,busline):
   
   #Display number of active buses
   for i in theJSON["Siri"]["ServiceDelivery"]["VehicleMonitoringDelivery"]:
-    for j in i["VehicleActivity"]:
-        bus_num+=1
+    bus_num = len(i["VehicleActivity"])
   print "Number of Active Buses : "+str(bus_num)
 
   #Preparation for conversion
