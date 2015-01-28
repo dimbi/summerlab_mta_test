@@ -2,7 +2,7 @@
 ##
 ## blumaps_sample.py
 ## fetch all bus data, simple plot and store it to postgre
-## MTA bus key = INSERT
+## MTA bus key = 4723b4b0-3e16-4a17-a24b-48d79ea53dc0
 ##
 ###############################################################################
 
@@ -134,7 +134,7 @@ def main(bus_key,shp_dir,out_pdf):
 
       
 if __name__ == '__main__':
-  key = "PUT YOUR API KEY HERE"
+  key = "4723b4b0-3e16-4a17-a24b-48d79ea53dc0"
   shpdir = "../nyc/SimplifiedStreetSegmentAnn.shp"
   outpdf = "output.pdf"
   main(key,shpdir,outpdf)
