@@ -116,8 +116,8 @@ def main(bus_key,shp_dir,out_pdf):
 
   #url data
   global urlData
-  urlData = "http://api.prod.obanyc.com/api/siri/vehicle-monitoring.json?key="+bus_key+"&VehicleMonitoringDetailLevel=calls"
-  
+  urlData = "http://api.prod.obanyc.com/api/siri/vehicle-monitoring.json?key="+bus_key
+
   #cheking API keys
   KeyCheck()
   
@@ -135,6 +135,6 @@ def main(bus_key,shp_dir,out_pdf):
       
 if __name__ == '__main__':
   key = "4723b4b0-3e16-4a17-a24b-48d79ea53dc0"
-  shpdir = "../nyc/SimplifiedStreetSegmentAnn.shp"
+  shpdir = "./nyc/SimplifiedStreetSegmentAnn.shp"
   outpdf = "output.pdf"
   main(key,shpdir,outpdf)
