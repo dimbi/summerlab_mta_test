@@ -38,9 +38,7 @@ def WebAccess():
        
 def printResults(data):
   #declaration of local variables
-  pro=[];
-  # Use the json module to load the string data into a dictionary
-  busJson = json.loads(data)  
+  pro=[]
 
   #Preparation for conversion
   proj=pyproj.Proj(init="esri:26918")
@@ -50,10 +48,13 @@ def printResults(data):
         lon=j["MonitoredVehicleJourney"]["VehicleLocation"]["Longitude"]
         pro.append(proj(lon,lat)) 
 
-  storePostgre(busJson)
   return pro
  
-def storePostgre(jsonData):
+def storePostgre(pgData):
+
+  # Use the json module to load the string data into a dictionary
+  jsonData = json.loads(pgData)  
+  
   #hardcode
   keyIdx = 10
   #connecting to postGres and write jsonData
@@ -123,13 +124,15 @@ def main(bus_key,shp_dir,out_pdf):
   
   # define a variable to hold the source URL
   data = WebAccess()
-  
+ 
+  storePostgre(data)
+
   #print the result
-  global coord
-  coord=printResults(data)   
+  #global coord
+  #coord=printResults(data)   
   
   #print the map
-  printMap(shp_dir,out_pdf,coord)
+  #rintMap(shp_dir,out_pdf,coord)
 
 
       
