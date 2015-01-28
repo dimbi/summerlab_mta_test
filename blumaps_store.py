@@ -55,7 +55,8 @@ def storePostgre(pgData):
       lat=j["MonitoredVehicleJourney"]["VehicleLocation"]["Latitude"]
       lon=j["MonitoredVehicleJourney"]["VehicleLocation"]["Longitude"]
       timeStamp=j["RecordedAtTime"]
-      cur.execute("INSERT INTO bus(id,time,line,destination,latitude,longitude) VALUES (%d,%s,%s,%s,%s,%s)",(keyIdx,timeStamp,lineName,destName,lat,lon))
+      print keyIdx
+      cur.execute("INSERT INTO bus(id,time,line,destination,latitude,longitude) VALUES (%s,%s,%s,%s,%s,%s)",(keyIdx,timeStamp,lineName,destName,lat,lon))
   db.commit()
 
 def main(bus_key,shp_dir,out_pdf):
