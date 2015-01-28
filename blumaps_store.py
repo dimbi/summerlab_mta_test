@@ -49,7 +49,7 @@ def storePostgre(pgData):
   keyIdx = -1
   for i in jsonData["Siri"]["ServiceDelivery"]["VehicleMonitoringDelivery"]:
     for j in i["VehicleActivity"]:
-      keyIdx =+ 1
+      keyIdx += 1
       lineName=j["MonitoredVehicleJourney"]["PublishedLineName"]
       destName=j["MonitoredVehicleJourney"]["DestinationName"]
       lat=j["MonitoredVehicleJourney"]["VehicleLocation"]["Latitude"]
