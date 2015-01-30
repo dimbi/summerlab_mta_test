@@ -25,27 +25,37 @@ def storePostgre(dataDir, fileName):
 
   #iterating each line from offline bus data  
   keyIdx = -1
+  tempCounter = -1
   for line in f:
+    tempCounter+=1
     tokenCount = -1
     keyIdx += 1
-    line = line.strip()
-    for tokens in line.split('\t'):
-      tokenCount+=1
-      if tokenCount == 0: 
-        lat = tokens
-      elif tokenCount == 1:
-        lon = tokens
-      elif tokenCount == 2:
-        timeStamp = tokens
-      elif tokenCount == 3:
-        lineName = tokens
-      elif tokenCount == 4:
-        distancePerLine = tokens      
-      elif tokenCount == 10:
-        destName = tokens
-
-  # Use the json module to load the string data into a dictionary
-    cur.execute("INSERT INTO bus(id,time,line,destination,latitude,longitude,distance) VALUES (%s,%s,%s,%s,%s,%s,%s)",(keyIdx,timeStamp,lineName,destName,lat,lon, distancePerLine))
+    if keyIdx ==0:
+      pass
+    else:
+      line = line.strip()
+      for tokens in line.split('\t'):
+        tokenCount+=1
+        if tokenCount == 0: 
+          lat = tokens
+        elif tokenCount == 1:
+          lon = tokens
+        elif tokenCount == 2:
+          timeStamp = tokens
+        elif tokenCount == 3:
+          vehicleId = tokens
+        elif tokenCount == 4:
+          distancePerLine = tokens
+        elif tokenCount == 7:
+          lineName = tokens      
+      
+        elif tokenCount == 10:
+          destName = tokens
+      # Use the json module to load the string data into a dictionary
+      cur.execute("INSERT INTO bus(id,time,line,destination,latitude,longitude,distance,vehicle_id) \
+                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",(keyIdx,timeStamp,lineName,destName,lat,lon,distancePerLine,vehicleId))
+    if tempCounter==5:
+      break
   db.commit()
 
 def main():
