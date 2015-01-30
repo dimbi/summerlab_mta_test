@@ -15,32 +15,42 @@ import time
 import psycopg2
 import psycopg2.extras
         
-def storePostgre(pgData):
+def storePostgre(dataDir, fileName):
 
-  # Use the json module to load the string data into a dictionary
-  jsonData = json.loads(pgData)  
+  f = open(dataDir+"/"+fileName+"2014-08-01.txt")
 
-  #connecting to postGres and write jsonData
+ #connecting to postGres and write jsonData
   db = psycopg2.connect('dbname=json_test user=dimasrinarso password=bibirkubiasasaja')
   cur = db.cursor()
 
-  #Preparation for conversion
-  keyIdx = -1
-  for i in jsonData["Siri"]["ServiceDelivery"]["VehicleMonitoringDelivery"]:
-    for j in i["VehicleActivity"]:
-      keyIdx += 1
-      lineName=j["MonitoredVehicleJourney"]["PublishedLineName"]
-      destName=j["MonitoredVehicleJourney"]["DestinationName"]
-      lat=j["MonitoredVehicleJourney"]["VehicleLocation"]["Latitude"]
-      lon=j["MonitoredVehicleJourney"]["VehicleLocation"]["Longitude"]
-      timeStamp=j["RecordedAtTime"]
-      print keyIdx
-      cur.execute("INSERT INTO bus(id,time,line,destination,latitude,longitude) VALUES (%s,%s,%s,%s,%s,%s)",(keyIdx,timeStamp,lineName,destName,lat,lon))
+  #iterating each line from offline bus data  
+  for line in f:
+    tokenCount = -1
+    line = line.strip()
+    for tokens in line.split('\t'):
+      tokenCount+=1
+      if tokenCount = 0: 
+        lat = tokens
+      elif tokenCount = 1:
+        lon = tokens
+      elif tokenCount = 2:
+        timeStamp = tokens
+      elif tokenCount = 3:
+        line = tokens
+      elif tokenCount = 4:
+        distance = tokens      
+      elif tokenCount = 10:
+        destinationName = tokens
+ 
+  # Use the json module to load the string data into a dictionary
+    print keyIdx
+    cur.execute("INSERT INTO bus(id,time,line,destination,latitude,longitude,distance) VALUES (%s,%s,%s,%s,%s,%s,%s)",(keyIdx,timeStamp,lineName,destName,lat,lon, destinationName))
   db.commit()
 
-def main(bus_key,shp_dir,out_pdf): 
-  storePostgre(data)
-
+def main():
+  fileName = "MTA-Bus-Time_."
+  offlineDir = "offline_data"   
+  storePostgre(offlineDir,fileName)
       
 if __name__ == '__main__':
   main()
