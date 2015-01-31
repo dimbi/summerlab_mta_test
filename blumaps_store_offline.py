@@ -3,59 +3,71 @@
 ## blumaps_store_online.py
 ## fetch all bus data, simple plot and store it to postgre
 ## MTA bus key = 4723b4b0-3e16-4a17-a24b-48d79ea53dc0
+## contact: drp354@nyu.edu
 ##
 ###############################################################################
 
-import urllib2,json,argparse,sys,pyproj,shapefile 
-import matplotlib.pyplot as plt
-from matplotlib.path import Path
-from matplotlib.patches import PathPatch
-from matplotlib.ticker import MaxNLocator
+import argparse
 import time
 import psycopg2
 import psycopg2.extras
+from datetime import date,datetime,timedelta
+
+#global init
+start_date='2014-08-02'
+end_date='2014-10-31'
+startDate = datetime.strptime(start_date,"%Y-%m-%d")
+endDate = datetime.strptime(end_date,"%Y-%m-%d")
+
+def daterange(startDate, endDate):
+  for n in range(int ((endDate - startDate).days)):
+    yield startDate + timedelta(n)
+
         
 def storePostgre(dataDir, fileName):
+  
+  for singleDate in daterange(startDate, endDate):
 
-  f = open(dataDir+"/"+fileName+"2014-08-01.txt")
+    f = open(dataDir+"/"+fileName+(singleDate.strftime("%Y-%m-%d"))+".txt")
 
- #connecting to postGres and write jsonData
-  db = psycopg2.connect('dbname=json_test user=dimasrinarso password=bibirkubiasasaja')
-  cur = db.cursor()
+    #connecting to postGres and write jsonData
+    db = psycopg2.connect('dbname=bus_data user=postgres password=postgres')
+    cur = db.cursor()
 
-  #iterating each line from offline bus data  
-  keyIdx = -1
-  tempCounter = -1
-  for line in f:
-    tempCounter+=1
-    tokenCount = -1
-    keyIdx += 1
-    if keyIdx ==0:
-      pass
-    else:
-      line = line.strip()
-      for tokens in line.split('\t'):
-        tokenCount+=1
-        if tokenCount == 0: 
-          lat = tokens
-        elif tokenCount == 1:
-          lon = tokens
-        elif tokenCount == 2:
-          timeStamp = tokens
-        elif tokenCount == 3:
-          vehicleId = tokens
-        elif tokenCount == 4:
-          distancePerLine = tokens
-        elif tokenCount == 7:
-          lineName = tokens      
+    #iterating each line from offline bus data  
+    keyIdx = -1
+    #tempCounter = -1
+    for line in f:
+      #tempCounter+=1
+      tokenCount = -1
+      keyIdx += 1
+      if keyIdx ==0:
+        pass
+      else:
+        line = line.strip()
+        for tokens in line.split('\t'):
+          tokenCount+=1
+          if tokenCount == 0: 
+            lat = tokens
+          elif tokenCount == 1:
+            lon = tokens
+          elif tokenCount == 2:
+            timeStamp = tokens
+          elif tokenCount == 3:
+            vehicleId = tokens
+          elif tokenCount == 4:
+            distancePerLine = tokens
+          elif tokenCount == 7:
+            lineName = tokens      
       
-        elif tokenCount == 10:
-          destName = tokens
-      # Use the json module to load the string data into a dictionary
-      cur.execute("INSERT INTO bus(id,time,line,destination,latitude,longitude,distance,vehicle_id) \
-                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",(keyIdx,timeStamp,lineName,destName,lat,lon,distancePerLine,vehicleId))
-    if tempCounter==5:
-      break
+          elif tokenCount == 10:
+            destName = tokens
+        # Use the json module to load the string data into a dictionary
+        cur.execute("INSERT INTO bus(id,time,line,destination,latitude,longitude,distance,vehicle_id) \
+                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+                    (keyIdx,timeStamp,lineName,destName,lat,lon,distancePerLine,vehicleId))
+    #if tempCounter==5:
+    #  break
   db.commit()
 
 def main():
