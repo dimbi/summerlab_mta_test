@@ -25,23 +25,27 @@ def daterange(startDate, endDate):
 
         
 def storePostgre(dataDir, fileName):
+
+  #iterating each line from offline bus data  
+  keyIdx = -1
   
   for singleDate in daterange(startDate, endDate):
 
+    #open each data
     f = open(dataDir+"/"+fileName+(singleDate.strftime("%Y-%m-%d"))+".txt")
 
     #connecting to postGres and write jsonData
     db = psycopg2.connect('dbname=bus_data user=postgres password=postgres')
     cur = db.cursor()
 
-    #iterating each line from offline bus data  
-    keyIdx = -1
     #tempCounter = -1
+    headerIdx = -1
     for line in f:
       #tempCounter+=1
       tokenCount = -1
       keyIdx += 1
-      if keyIdx ==0:
+      headerIdx += 1
+      if headerIdx == 0:
         pass
       else:
         line = line.strip()
