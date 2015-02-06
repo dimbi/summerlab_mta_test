@@ -15,7 +15,7 @@ import psycopg2.extras
 from datetime import date,datetime,timedelta
 
 #global init
-start_date='2014-09-01'
+start_date='2014-08-01'
 end_date='2014-11-01'
 startDate = datetime.strptime(start_date,"%Y-%m-%d")
 endDate = datetime.strptime(end_date,"%Y-%m-%d")
@@ -33,7 +33,7 @@ def storePostgre(dataDir, fileName):
   keyIdx = -1
 
   #connecting to postGres and write jsonData
-  db = psycopg2.connect('dbname=bus_gis user=postgres')
+  db = psycopg2.connect('dbname=gis_test user=postgres')
   cur = db.cursor()
   
   for singleDate in daterange(startDate, endDate):
@@ -77,9 +77,9 @@ def storePostgre(dataDir, fileName):
               busId = tokens
 
           # Use the json module to load the string data into a dictionary
-          cur.execute("INSERT INTO bus(id,timestamp,routeid,latitude,longitude,busid) \
-                       VALUES (%s,%s,%s,%s,%s,%s)",
-                      (keyIdx,timeStamp,lineName,lat,lon,busId))
+          cur.execute("INSERT INTO bus(id,timestamp,routeid,latitude,longitude,busid,sdpoint) \
+                       VALUES ('%d','%s','%s','%s','%s','%s',ST_GeomFromText('Point(%f %f)', 4326))"%
+                      (keyIdx,timeStamp,lineName,lat,lon,busId,float(lon),float(lat)))
 	  #query = "INSERT INTO bus (busnum, busid, busloc, bustimestamps, buslat, buslng, busroute) 
           #VALUES ('%s', '%s',ST_GeomFromText('Point(%f %f)', 4326), '%s', '%f', '%f', '%s')" % 
           #( i, z, bus[i][z][1], bus[i][z][0], bus[i][z][3], bus[i][z][1], bus[i][z][0],  bus[i][z][2])
@@ -92,7 +92,7 @@ def storePostgre(dataDir, fileName):
           #  break
  
       db.commit()
-      print str(datetime.now())+" data on date "+dateStr+" inserted successfully."
+      print str(datetime.now())+"  data on date "+dateStr+" inserted successfully."
 
 def main():
   fileName = "MTA-Bus-Time_."
